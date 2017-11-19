@@ -18,4 +18,3 @@ while(1):
 		print line.strip()+' '+linenew.strip()
 		newdat.close()
 olddata.close()
-			
