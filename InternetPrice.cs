@@ -17,7 +17,7 @@ namespace Webby
 			double p1=(now2.ToUniversalTime() - epoch).TotalSeconds;
 			double p2=(now.ToUniversalTime() - epoch).TotalSeconds;
 			string csvData=null,stockID="ANTO.L";
-			string crumb="A1e6BUtHs4B",cookie="B=ccjacn1d11i6j&b=3&s=fr";
+			string crumb="K4CSukEMZO5",cookie="B=65h7p3ld11j57&b=3&s=ue";
 			if(args.Length>=1)stockID=args[0];
             using (WebClient web = new WebClient())
             {
