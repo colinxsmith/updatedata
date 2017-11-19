@@ -17,7 +17,7 @@ namespace Webby
 			double p1=(now2.ToUniversalTime() - epoch).TotalSeconds;
 			double p2=(now.ToUniversalTime() - epoch).TotalSeconds;
 			string csvData=null,stockID="ANTO.L";
-			string crumb="K4CSukEMZO5",cookie="B=65h7p3ld11j57&b=3&s=ue";
+			string crumb="cBIRIPJ3hM7",cookie="B=chusmndd13b6q&b=3&s=qi";
 			if(args.Length>=1)stockID=args[0];
             using (WebClient web = new WebClient())
             {
@@ -41,6 +41,7 @@ namespace Webby
 					try {
 						csvData = web.DownloadString(string.Format("https://query1.finance.yahoo.com/v7/finance/download/{0}?events=history&interval=1d&crumb={1}&period1={2}&period2={3}",stockID,crumb,p1,p2));
 					}catch{
+						csvData = "No symbol";
 						break;
 					}
 				}

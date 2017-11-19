@@ -13,8 +13,10 @@ while(1):
 		while(1):
 			newdatl=newdat.readline()
 			if len(newdatl)<=2:break
-			pr=newdatl.split()
-			linenew+=pr[1]+' '
+                        try:
+                            pr=newdatl.split()
+			    linenew+=pr[1]+' '
+                        except:pass
 		print line.strip()+' '+linenew.strip()
 		newdat.close()
 olddata.close()
