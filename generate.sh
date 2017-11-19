@@ -1,6 +1,6 @@
 #!/bin/bash
 
-timelag=18
+timelag=18 #Initially choose timlag so that the first date is 31-10-2017
 
 for stock in $(awk '{for(i=1;i<NF;++i)print $i;}' names)
 do

@@ -16,15 +16,22 @@ namespace Webby
 			}
 			double p1=(now2.ToUniversalTime() - epoch).TotalSeconds;
 			double p2=(now.ToUniversalTime() - epoch).TotalSeconds;
-            string csvData=null,crumb="DJCSezeQxOX",cookie="B=fn7mr5dd0thub&b=3&s=77",stockID="ANTO.L";
+			string csvData=null,stockID="ANTO.L";
+			string crumb="A1e6BUtHs4B",cookie="B=ccjacn1d11i6j&b=3&s=fr";
 			if(args.Length>=1)stockID=args[0];
             using (WebClient web = new WebClient())
             {
-              /*Get crumb and cookie: Lasts for a year. (I got it on 17-11-2017)
+              /*Get crumb and cookie: Lasts for a year. (I got it on 18-11-2017)
                * cookie is in the header from wget (hence -S option)
                * 
-               * wget -S https://uk.finance.yahoo.com/quote/ANTO.L/history
-               * awk -F, '/CrumbStore/{for(i=1;i<NF;++i){print $i}}' history|sed -n "/Crumb/p"
+               * wget -S https://uk.finance.yahoo.com/quote/ANTO.L/history or to get the cookie in a file
+               * wget --save-cookies cookie_file https://uk.finance.yahoo.com/quote/ANTO.L/history
+               * 
+               * cookie_file contains .yahoo.com	TRUE	/	FALSE	1542581139	B	4m2hcddd11e0j&b=3&s=7o (here use B=4m2hcddd11e0j&b=3&s=7o)
+               * awk '/yahoo/{print $6"="$7}' cookie_file does the trick
+               * 
+               * awk -F, '/CrumbStore/{for(i=1;i<NF;++i){print $i}}' history|sed -n "/Crumb/p" | awk -F\" '{print $6}'
+               * gives FFw48mTSWEd from "CrumbStore":{"crumb":"FFw48mTSWEd"}               *
                *
                *  */
               web.Headers.Add(HttpRequestHeader.Cookie,cookie);
