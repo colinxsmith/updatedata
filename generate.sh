@@ -1,6 +1,6 @@
 #!/bin/bash
 
-timelag=18 #Initially choose timelag so that the first date is 31-10-2017
+timelag=20 #Initially choose timelag so that the first date is 31-10-2017
 
 #set up the "No symbol" string
 ns=`./InternetPrice.exe colinsmith 23 | awk -F, '{print $1,$5}' |sed "/Close/d" | sed "s/\r//g" | sed "/^ $/d"`
@@ -25,7 +25,7 @@ done
 for stock in $(awk '{for(i=1;i<=NF;++i)print $i;}' names)
 do
 	echo $stock
-	./InternetPrice.exe $stock $timelag | awk -F, '{print $1,$5}' |sed "/Close/d" | sed "s/\r//g" | sed "/^ $/d" > $stock.dat
+	./InternetPrice.exe $stock $timelag|sed "s/\.0*,/.0,/g" | awk -F, '{print $1,$5}' |sed "/Close/d" | sed "s/\r//g" | sed "/^ $/d" > $stock.dat
 	back=`cat $stock.dat`
 	if [ "$back" = "$ns" ] ; then
 		echo bad stock $stock
@@ -35,7 +35,7 @@ do
 done
 
 #Append the new data to the old
-python grow.py |awk ' {if($NF == "null") {$NF=$(NF-1);print;}else{print;}} ' | awk ' {for(i=3;i<=NF;++i){if($i == "null") {$i=$(i-1);}else if($i/$(i-1)<0.02){$i*=100;}else if($i/$(i-1)>50){$i*=1e-2;}};print;} '|sed "s/\r//g"> updated
+python grow.py startnew names |awk ' {if($NF == "null") {$NF=$(NF-1);print;}else{print;}} ' | awk ' {for(i=3;i<=NF;++i){if($i == "null") {$i=$(i-1);}else if($i/$(i-1)<0.02){$i*=100;}else if($i/$(i-1)>50){$i*=1e-2;}};print;} '|sed "s/\r//g"> updated
 
 mv startnew startnew.prev
 cp -p updated startnew
