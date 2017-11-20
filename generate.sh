@@ -35,7 +35,7 @@ do
 done
 
 #Append the new data to the old
-python grow.py startnew names |awk ' {if($NF == "null") {$NF=$(NF-1);print;}else{print;}} ' | awk ' {for(i=3;i<=NF;++i){if($i == "null") {$i=$(i-1);}else if($i/$(i-1)<0.02){$i*=100;}else if($i/$(i-1)>50){$i*=1e-2;}};print;} '|sed "s/\r//g"> updated
+python grow.py yahoostart names |awk '{for(i=3;i<=NF;++i){	if($i == "null" || $i=="0") 	{		$i=$(i-1);	}}print;}' | awk ' {for(i=3;i<=NF;++i){if($i/$(i-1)<0.02){$i*=100;}else if($i/$(i-1)>50){$i*=1e-2;}};print;} '|sed "s/\r//g"> updated
 
 mv startnew startnew.prev
 cp -p updated startnew
