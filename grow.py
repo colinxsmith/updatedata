@@ -1,5 +1,16 @@
-olddata=open('startnew')
-namesf=open('names')
+from sys import argv
+initialdata='startnew'
+namesd='names'
+
+
+if len(argv)>1:
+	initialdata=argv[1]
+	
+if len(argv)>2:
+	namesd=argv[2]
+
+olddata=open(initialdata)
+namesf=open(namesd)
 names=namesf.readline().split()
 
 while(1):

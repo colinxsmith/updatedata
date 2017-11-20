@@ -17,11 +17,11 @@ namespace Webby
 			double p1=(now2.ToUniversalTime() - epoch).TotalSeconds;
 			double p2=(now.ToUniversalTime() - epoch).TotalSeconds;
 			string csvData=null,stockID="ANTO.L";
-			string crumb="cBIRIPJ3hM7",cookie="B=chusmndd13b6q&b=3&s=qi";
+			string crumb="tUcb\u002FPjYtR5",cookie="B=b0p3tbtd15alp&b=3&s=jh";
 			if(args.Length>=1)stockID=args[0];
             using (WebClient web = new WebClient())
             {
-              /*Get crumb and cookie: Lasts for a year. (I got it on 18-11-2017)
+              /*Get crumb and cookie: Lasts for a year. (I got it on 20-11-2017)
                * cookie is in the header from wget (hence -S option)
                * 
                * wget -S https://uk.finance.yahoo.com/quote/ANTO.L/history or to get the cookie in a file
