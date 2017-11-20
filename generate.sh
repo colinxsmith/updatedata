@@ -1,3 +1,6 @@
+#!/bin/bash
+
+timelag=20 #Initially choose timelag so that the first date is 31-10-2017
 
 if [ $(date +%u) == "1" ]; then timelag=3 ;fi  #Monday
 if [ $(date +%u) == "2" ]; then timelag=1 ;fi  #Tuesday
