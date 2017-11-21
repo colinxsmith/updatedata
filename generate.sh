@@ -1,12 +1,13 @@
 #!/bin/bash
 
-timelag=20 #Initially choose timelag so that the first date is 31-10-2017
+timelag=21 #Initially choose timelag so that the first date is 31-10-2017
 
-if [ $(date +%u) == "1" ]; then timelag=3 ;fi  #Monday
-if [ $(date +%u) == "2" ]; then timelag=1 ;fi  #Tuesday
-if [ $(date +%u) == "3" ]; then timelag=1 ;fi  #Wednesday
-if [ $(date +%u) == "4" ]; then timelag=1 ;fi  #Thursday
-if [ $(date +%u) == "5" ]; then timelag=1 ;fi  #Friday
+
+#if [ $(date +%u) == "1" ]; then timelag=3 ;fi  #Monday
+#if [ $(date +%u) == "2" ]; then timelag=1 ;fi  #Tuesday
+#if [ $(date +%u) == "3" ]; then timelag=1 ;fi  #Wednesday
+#if [ $(date +%u) == "4" ]; then timelag=1 ;fi  #Thursday
+#if [ $(date +%u) == "5" ]; then timelag=1 ;fi  #Friday
 
 
 #set up the "No symbol" string
@@ -24,7 +25,7 @@ do
 		echo back is $back
 		if [ "$back" != "$ns" ] ; then
 		echo Set up NULL.dat
-		./InternetPrice.exe $stock $timelag | awk -F, '{print $1,$5}' |sed "/Close/d" |sed "/^ $/d"| awk '{for(i=1;i<=NF;++i){printf("%s ",i==1?$i:"null");}printf("\n");}' | sed "s/\r//g" | sed "/^ $/d" >NULL.dat
+		./InternetPrice.exe $stock $timelag | awk -F, '{print $1,$5}' |sed "/Close/d" |sed "/^ $/d"| awk '{for(i=1;i<=NF;++i){printf("%s ",i==1?$i:"null");}printf("\n");}' | sed "s/\r//g" | sed "/^ $/d"| awk 'START{keep=0;}{if(keep!=$1){keep=$1;print;}}' >NULL.dat
 		nullset=1
 		break
 		else
@@ -44,7 +45,7 @@ done
 for stock in $(awk '{for(i=1;i<=NF;++i)print $i;}' names)
 do
 	echo $stock
-	./InternetPrice.exe $stock $timelag|sed "s/\.0*,/.0,/g" | awk -F, '{print $1,$5}' |sed "/Close/d" | sed "s/\r//g" | sed "/^ $/d" > $stock.dat
+	./InternetPrice.exe $stock $timelag|sed "s/\.0*,/.0,/g" | awk -F, '{print $1,$5}' |sed "/Close/d" | sed "s/\r//g" | sed "/^ $/d" |awk 'START{keep=0;}{if(keep!=$1){keep=$1;print;}}' > $stock.dat
 	back=`cat $stock.dat`
 	if [ "$back" = "$ns" ] ; then
 		echo bad stock $stock
@@ -59,5 +60,5 @@ python grow.py startnew names |awk '{for(i=3;i<=NF;++i){	if($i == "null" || $i==
 mv startnew startnew.prev
 cp -p updated startnew
 
-awk '{ns=0;for(i=NF;i>3;i--){if($(i-1)==$i){ns++;}else{break;}}if(ns<NF*0.5)print $0}' startnew > corrected
+awk '{ns=0;for(i=NF;i>3;i--){if($(i-1)==$i){ns++;}else{break;}}if(ns<NF*0.5)print $0}' updated > corrected
 
