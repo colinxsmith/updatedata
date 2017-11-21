@@ -1,13 +1,24 @@
 #!/bin/bash
 
-timelag=21 #Initially choose timelag so that the first date is 31-10-2017
+function countlines  {
+    line=0
+    for dd in $(awk '{print $1}' $1)
+    do 
+		line=$((line+1))
+	done
+    return $line
+}
 
+
+timelag=21 #Initially choose timelag so that the first date is 31-10-2017
 
 #if [ $(date +%u) == "1" ]; then timelag=3 ;fi  #Monday
 #if [ $(date +%u) == "2" ]; then timelag=1 ;fi  #Tuesday
 #if [ $(date +%u) == "3" ]; then timelag=1 ;fi  #Wednesday
 #if [ $(date +%u) == "4" ]; then timelag=1 ;fi  #Thursday
 #if [ $(date +%u) == "5" ]; then timelag=1 ;fi  #Friday
+
+firstdate=`date --date=@$(echo $(($(date +%s)-$timelag*60*60*24)))`
 
 
 #set up the "No symbol" string
@@ -40,12 +51,19 @@ do
 	fi
 done
 
+line=0
+for dd in $(awk '{print $1}' NULL.dat); do te=`date +%u --date=$dd`;echo $((($te-1)%5));line=$((line+1));done
+echo Should have $line lines in each data file
 
-
+function countlines() {
+	line=0
+	for dd in $(awk '{print $1}' $1); do te=`date +%u --date=$dd`;echo $((($te-1)%5));line=$((line+1));done
+}
 for stock in $(awk '{for(i=1;i<=NF;++i)print $i;}' names)
 do
 	echo $stock
 	./InternetPrice.exe $stock $timelag|sed "s/\.0*,/.0,/g" | awk -F, '{print $1,$5}' |sed "/Close/d" | sed "s/\r//g" | sed "/^ $/d" |awk 'START{keep=0;}{if(keep!=$1){keep=$1;print;}}' > $stock.dat
+	
 	back=`cat $stock.dat`
 	if [ "$back" = "$ns" ] ; then
 		echo bad stock $stock
