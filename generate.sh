@@ -1,12 +1,32 @@
 #!/bin/bash
 
-function countlines  {
+function countlines  { #Number of lines in a file
     line=0
     for dd in $(awk '{print $1}' $1)
     do 
 		line=$((line+1))
 	done
     return $line
+}
+function datadiff { #The number of data items in a time interval
+	tlag=$1
+	endp=$2
+	startp=`date +%s --date=@$(echo $(($endp-60*60*24*$tlag)))`
+	endpd=$(date +%u --date=@$(echo $endp))
+	endps=$(date +%Y-%m-%d --date=@$(echo $endp))
+	echo $endps $endpd
+
+	startpd=$(date +%u --date=@$(echo $startp))
+	startps=$(date +%Y-%m-%d --date=@$(echo $startp))
+	echo $startps $startpd
+	if [ $startpd -gt 5 ];then
+		startpd=5
+	fi
+	daydiff=$(($endpd-$startpd))
+	if [ $daydiff -lt 0 ] ; then
+		daydiff=$(($daydiff+5))
+	fi
+	return $(($tlag/7*5+$daydiff))
 }
 
 
@@ -24,10 +44,13 @@ firstdate=`date --date=@$(echo $(($(date +%s)-$timelag*60*60*24)))`
 #set up the "No symbol" string
 ns=`./InternetPrice.exe colinsmith 23 | awk -F, '{print $1,$5}' |sed "/Close/d" | sed "s/\r//g" | sed "/^ $/d"`
 nullset=0
+expectedline=0
 
 while [ $nullset = 0 ] 
 do
-	echo nullset $nullset timelag $timelag
+	datadiff $timelag $(date +%s)
+	expectedline=$?
+	echo nullset $nullset timelag $timelag expect $expectedline lines in data file
 	#create the file of nulls for missing symbol
 	for stock in $(awk '{for(i=1;i<=NF;++i)print $i;}' names)
 	do
@@ -37,8 +60,15 @@ do
 		if [ "$back" != "$ns" ] ; then
 		echo Set up NULL.dat
 		./InternetPrice.exe $stock $timelag | awk -F, '{print $1,$5}' |sed "/Close/d" |sed "/^ $/d"| awk '{for(i=1;i<=NF;++i){printf("%s ",i==1?$i:"null");}printf("\n");}' | sed "s/\r//g" | sed "/^ $/d"| awk 'START{keep=0;}{if(keep!=$1){keep=$1;print;}}' >NULL.dat
+		countlines NULL.dat
+		nline=$?
+		if [ "$nline" = "$expectedline" ] ; then
+		echo Accept NULL data file
 		nullset=1
 		break
+		else
+			echo problem amount of data $stock
+		fi
 		else
 			echo problem stock $stock
 		fi
@@ -51,14 +81,7 @@ do
 	fi
 done
 
-line=0
-for dd in $(awk '{print $1}' NULL.dat); do te=`date +%u --date=$dd`;echo $((($te-1)%5));line=$((line+1));done
-echo Should have $line lines in each data file
 
-function countlines() {
-	line=0
-	for dd in $(awk '{print $1}' $1); do te=`date +%u --date=$dd`;echo $((($te-1)%5));line=$((line+1));done
-}
 for stock in $(awk '{for(i=1;i<=NF;++i)print $i;}' names)
 do
 	echo $stock
@@ -68,6 +91,14 @@ do
 	if [ "$back" = "$ns" ] ; then
 		echo bad stock $stock
 		cp -p NULL.dat $stock.dat
+	else
+		countlines $stock.dat
+		nline=$?
+		if [ $nline != $expectedline ];then #need to put more lines in the file
+			echo pad $stock.dat with nulls $nline
+			python padf.py $stock.dat
+			cp -p scratch $stock.dat
+		fi
 	fi
 
 done
