@@ -63,7 +63,7 @@ do
 		./InternetPrice.exe $stock $timelag | awk -F, '{print $1,$5}' |sed "/Close/d" |sed "/^ $/d"| awk '{for(i=1;i<=NF;++i){printf("%s ",i==1?$i:"null");}printf("\n");}' | sed "s/\r//g" | sed "/^ $/d"| awk 'BEGIN{keep=0;}{if(keep!=$1){keep=$1;print;}}' >NULL.dat
 		countlines NULL.dat
 		nline=$?
-		if [ "$nline" = "$expectedline" ] ; then
+		if [ "$nline" -ge "$expectedline" ] ; then
 		echo Accept NULL data file
 		nullset=1
 		break
