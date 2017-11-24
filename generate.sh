@@ -30,7 +30,9 @@ function datadiff { #The number of data items in a time interval
 }
 
 
-timelag=22 #Initially choose timelag so that the first date is 31-10-2017
+timelag=$((($(date +%s)-$(date +%s --date='2017-10-31'))/60/60/24))
+
+#timelag=22 #Initially choose timelag so that the first date is 31-10-2017
 
 #if [ $(date +%u) == "1" ]; then timelag=3 ;fi  #Monday
 #if [ $(date +%u) == "2" ]; then timelag=1 ;fi  #Tuesday
