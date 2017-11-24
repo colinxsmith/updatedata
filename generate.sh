@@ -120,3 +120,5 @@ cp -p updated startnew
 
 awk '{ns=0;for(i=NF;i>3;i--){if($(i-1)==$i){ns++;}else{break;}}if(ns<NF*0.5)print $0}' updated > corrected
 
+NF=$(awk 'END{print NF}' startnew)
+awk -vFF=$NF 'BEGIN{check=FF}{if(NF!=check)print $1}' startnew
