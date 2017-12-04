@@ -88,6 +88,7 @@ done
 for stock in $(awk '{for(i=1;i<=NF;++i)print $i;}' names)
 do
 	echo $stock
+	echo $ns > $stock.dat
 	./InternetPrice.exe $stock $timelag|sed "s/\.0*,/.0,/g" | awk -F, '{print $1,$5}' |sed "/Close/d" | sed "s/\r//g" | sed "/^ $/d" |awk 'BEGIN{keep=0;}{if(keep!=$1){keep=$1;print;}}' > $stock.dat
 	
 	back=`cat $stock.dat`
