@@ -48,6 +48,7 @@ fd=`date +%s --date=$firstdate`
 ns=`./InternetPrice.exe colinsmith 23 | awk -F, '{print $1,$5}' |sed "/Close/d" | sed "s/\r//g" | sed "/^ $/d"`
 nullset=0
 expectedline=0
+publicholidaysininterval=0
 
 while [ $nullset = 0 ] 
 do
@@ -65,6 +66,7 @@ do
 		./InternetPrice.exe $stock $timelag | awk -F, '{print $1,$5}' |sed "/Close/d" |sed "/^ $/d"| awk '{for(i=1;i<=NF;++i){printf("%s ",i==1?$i:"null");}printf("\n");}' | sed "s/\r//g" | sed "/^ $/d"| awk 'BEGIN{keep=0;}{if(keep!=$1){keep=$1;print;}}' >NULL.dat
 		countlines NULL.dat
 		nline=$?
+		nline=$((nline+$((publicholidaysininterval))))
 		if [ "$nline" -ge "$expectedline" ] ; then
 		echo Accept NULL data file
 		nullset=1
@@ -79,8 +81,8 @@ do
 	#Now we can get the data files sorted out
 	done
 	if [ $nullset = 0 ] ; then
-	timelag=$((timelag+1))
-	echo We must increase timelag to $timelag
+	publicholidaysininterval=$((publicholidaysininterval+1))
+	echo We must increase publicholidaysininterval to $publicholidaysininterval
 	fi
 done
 
@@ -98,6 +100,7 @@ do
 	else
 		countlines $stock.dat
 		nline=$?
+		nline=$((nline+$((publicholidaysininterval))))
 		if [ $nline != $expectedline ];then #need to put more lines in the file
 			echo pad $stock.dat with nulls $nline
 			python padf.py $stock.dat
