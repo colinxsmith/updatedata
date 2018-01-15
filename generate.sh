@@ -30,7 +30,6 @@ function datadiff { #The number of data items in a time interval
 }
 
 
-timelag=$((($(date +%s)-$(date +%s --date='2017-10-31'))/60/60/24))
 
 #timelag=22 #Initially choose timelag so that the first date is 31-10-2017
 
@@ -39,6 +38,8 @@ timelag=$((($(date +%s)-$(date +%s --date='2017-10-31'))/60/60/24))
 #if [ $(date +%u) == "3" ]; then timelag=1 ;fi  #Wednesday
 #if [ $(date +%u) == "4" ]; then timelag=1 ;fi  #Thursday
 #if [ $(date +%u) == "5" ]; then timelag=1 ;fi  #Friday
+
+#timelag=$((($(date +%s)-$(date +%s --date='2017-10-31'))/60/60/24))
 
 firstdate=`date +%Y-%m-%d --date=@$(echo $(($(date +%s)-$timelag*60*60*24)))`
 echo $firstdate
@@ -125,6 +126,8 @@ mv startnew startnew.prev
 cp -p updated startnew
 
 awk '{ns=0;for(i=NF;i>3;i--){if($(i-1)==$i){ns++;}else{break;}}if(ns<NF*0.5)print $0}' updated > corrected
+awk 'BEGIN{ccc=0};{ns=0;for(i=NF;i>3;i--){if($(i-1)==$i){ns++;}else{break;}}if(ns>=NF*0.5){ccc++;print ccc,"Remove data in corrected to make corr1 for ",$1;}};' updated
+
 
 NF=$(awk 'END{print NF}' startnew)
-awk -vFF=$NF 'BEGIN{check=FF}{if(NF!=check)print "Bad",$1}' startnew
+awk -vFF=$NF 'BEGIN{check=FF}{if(NF!=check)print "Bad length for",$1}' startnew
